@@ -1,3 +1,4 @@
+import configs
 import tester
 from tester import run_tests
 from macq.extract.extract import modes
@@ -23,5 +24,7 @@ def randomized_sampler_example():
 
 
 if __name__ == '__main__':
-    run_tester()
+    configs.run_depots("new.pddl")
+    tester.clean_dirs()
+    # run_tester()
     # randomized_sampler_example()

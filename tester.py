@@ -109,7 +109,7 @@ def generate_problems():
     for i, k in enumerate(set(problem2_info.keys()).difference({key for key in problem2_info.keys()
                                                                 if not problem2_info[key]["run?"]})):
         # generate problem and write it to directory
-        print(f"generating problem {i} for dom{k}")
+        print(f"generating problem {i} for domain {k}")
         prob_file_path = str(
             (gen_probs_dir / f"prob{i}.pddl").resolve())
         problem2_info[k]["exc"](prob_file_path)
