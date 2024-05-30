@@ -21,7 +21,6 @@ def setup():
 
 def run_grid(f_out: str | None):
     problem_args = problem2_info["grid"]
-
     output_file = f_out
     run_command = (
         f"python3 pddl-generators-main/grid/generate.py "
