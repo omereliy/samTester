@@ -38,7 +38,6 @@ def run_depots(f_out: str | None):
     problem_args = problem2_info["depots"]
     output_file = f_out
     subprocess.check_output("cd ..", shell=True)
-
     run_command = (
         f"./pddl-generators-main/depots/depots "
         f"-e {problem_args.get('-e', 1)} "
