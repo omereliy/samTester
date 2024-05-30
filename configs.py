@@ -1,6 +1,15 @@
 import os
 import subprocess
 import sys
+from typing import Any
+from typing import Callable
+
+
+# class DomainProbInfo:
+#     kwargs: dict[str, str] = dict()
+#     f_out: str = sys.stdout  # default
+#     run_command: Callable[[Any], Any]
+#     is_to_run: bool = True
 
 
 def setup():

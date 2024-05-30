@@ -166,7 +166,23 @@ def compare_models(ext1: extract.modes,
                    ext1_args: dict[str, Any],
                    ext2_args: dict[str, Any],
                    token=IdentityObservation,
-                   model_stats: Stats = Stats()):
+                   model_stats: Stats = Stats()) -> Stats:
+    def runnable_ext1():
+        print(f"starting ext1 for the {index} time")
+        extract.Extract(obs_tracelist=obs_trace_list,
+                        mode=ext1,
+                        kwargs=ext1_args).to_pddl(domain_name=dom_name,
+                                                  domain_filename=str(
+                                                      (learned_dom1_path.absolute() / f"dom{index}").resolve()))
+
+    def runnable_ext2():
+        print(f"starting ext2 for the {index} time")
+        extract.Extract(obs_tracelist=obs_trace_list,
+                        mode=ext2,
+                        kwargs=ext2_args).to_pddl(domain_name=dom_name,
+                                                  domain_filename=str(
+                                                      (learned_dom2_path.absolute() / f"dom{index}").resolve()))
+
     for index in range(len(os.listdir(gen_probs_dir))):
         domain_filename = str(
             (orig_domains_dir / f"dom{index}.pddl").resolve())
@@ -196,22 +212,6 @@ def compare_models(ext1: extract.modes,
         trace_list: TraceList = test_sampler.traces
         obs_trace_list = trace_list.tokenize(Token=token)
         dom_name = test_sampler.problem.domain_name
-
-        def runnable_ext1():
-            print(f"starting ext1 for the {index} time")
-            extract.Extract(obs_tracelist=obs_trace_list,
-                            mode=ext1,
-                            kwargs=ext1_args).to_pddl(domain_name=dom_name,
-                                                      domain_filename=str(
-                                                          (learned_dom1_path.absolute() / f"dom{index}").resolve()))
-
-        def runnable_ext2():
-            print(f"starting ext2 for the {index} time")
-            extract.Extract(obs_tracelist=obs_trace_list,
-                            mode=ext2,
-                            kwargs=ext2_args).to_pddl(domain_name=dom_name,
-                                                      domain_filename=str(
-                                                          (learned_dom2_path.absolute() / f"dom{index}").resolve()))
 
         t1: threading.Thread = threading.Thread(target=runnable_ext1)
         t2: threading.Thread = threading.Thread(target=runnable_ext2)
@@ -254,6 +254,7 @@ def compare_models(ext1: extract.modes,
                                                dom=str(
                                                    (orig_domains_dir / f"dom{index}").resolve()))
         model_stats.update_stats({ModelName.model2: {"fp": test_results["fn"], "tp": test_results["tp"]}})
+        return model_stats
 
 
 def run_tests(ext_mode1: extract.modes,
