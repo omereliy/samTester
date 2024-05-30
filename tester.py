@@ -222,7 +222,7 @@ def compare_models(ext1: extract.modes,
                                          plan_len=3,
                                          num_traces=1)
 
-        # TODO: understand what samplers to use and what traces to generate in order to make comparison
+        #  understand what samplers to use and what traces to generate in order to make comparison
         "make trace to learn from"
         test_sampler.num_traces = 1
         test_sampler.generate_traces()
