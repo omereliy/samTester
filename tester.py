@@ -1,12 +1,13 @@
 import enum
 import threading
+import multiprocessing
 from typing import Any
 from configs import problem2_info
 from pathlib import Path
 import os
 from macq.extract import extract
 from macq.trace import Fluent, TraceList, State, Action, PlanningObject
-from macq.generate.pddl import VanillaSampling, FDRandomWalkSampling, Generator
+from macq.generate.pddl import VanillaSampling
 from macq.observation.identity_observation import IdentityObservation
 
 base = Path(__file__).parent
@@ -177,7 +178,8 @@ def compare_models(ext1: extract.modes,
                    ext2_args: dict[str, Any],
                    token=IdentityObservation,
                    model_stats: Stats = Stats()) -> Stats:
-    def runnable_ext1():
+    # define processes for multiprocessing
+    def run_ext1(trace_lis: TraceList):
         print(f"starting ext1 for the {index} time")
         extract.Extract(obs_tracelist=obs_trace_list,
                         mode=ext1,
@@ -185,7 +187,17 @@ def compare_models(ext1: extract.modes,
                                                   domain_filename=str(
                                                       (learned_dom1_path.absolute() / f"dom{index}").resolve()))
 
-    def runnable_ext2():
+        model1_sampler: VanillaSampling = VanillaSampling(observe_pres_effs=True,
+                                                          observe_static_fluents=True,
+                                                          dom=str(
+                                                              (learned_dom1_path.absolute() / f"dom{index}").resolve()),
+                                                          prob=prob_filename,
+                                                          plan_len=10,
+                                                          num_traces=20)
+
+        trace_lis.append(t for t in model1_sampler.generate_traces().traces)
+
+    def run_ext2(trace_lis: TraceList):
         print(f"starting ext2 for the {index} time")
         extract.Extract(obs_tracelist=obs_trace_list,
                         mode=ext2,
@@ -193,76 +205,77 @@ def compare_models(ext1: extract.modes,
                                                   domain_filename=str(
                                                       (learned_dom2_path.absolute() / f"dom{index}").resolve()))
 
+        model2_sampler: VanillaSampling = VanillaSampling(observe_pres_effs=True,
+                                                          observe_static_fluents=True,
+                                                          dom=str(
+                                                              (learned_dom2_path.absolute() / f"dom{index}").resolve()),
+                                                          prob=prob_filename,
+                                                          plan_len=10,
+                                                          num_traces=20)
+        trace_lis.append(t for t in model2_sampler.generate_traces().traces)
+
+    def init_gen_trace_origin_sampler():
+        orig_sampler: VanillaSampling = VanillaSampling(observe_pres_effs=True,
+                                                        observe_static_fluents=True,
+                                                        dom=domain_filename,
+                                                        prob=prob_filename,
+                                                        plan_len=1,
+                                                        num_traces=20)
+        orig_traces.append(t for t in orig_sampler.generate_traces().traces)
+
     for index in range(len(os.listdir(gen_probs_dir))):
         domain_filename = str(
             (orig_domains_dir / f"dom{index}.pddl").resolve())
         prob_filename = str(
             (gen_probs_dir / f"prob{index}.pddl").resolve())
 
-        "make samplers for the problem"
+        # define trace lists fo late comparison
+        orig_traces: TraceList = TraceList()
+        model1_traces: TraceList = TraceList()
+        model2_traces: TraceList = TraceList()
 
-        test_sampler = VanillaSampling(observe_pres_effs=True,
-                                       observe_static_fluents=True,
-                                       dom=domain_filename,
-                                       prob=prob_filename,
-                                       plan_len=50,
-                                       num_traces=1)
-
-        model1_sampler = VanillaSampling(observe_pres_effs=True,
-                                         observe_static_fluents=True,
-                                         dom=domain_filename,
-                                         prob=prob_filename,
-                                         plan_len=3,
-                                         num_traces=1)
-
-        model2_sampler = VanillaSampling(observe_pres_effs=True,
-                                         observe_static_fluents=True,
-                                         dom=domain_filename,
-                                         prob=prob_filename,
-                                         plan_len=3,
-                                         num_traces=1)
-
-        #  understand what samplers to use and what traces to generate in order to make comparison
-        "make trace to learn from"
-        test_sampler.num_traces = 1
-        test_sampler.generate_traces()
-
-        trace_list: TraceList = test_sampler.traces
-        obs_trace_list = trace_list.tokenize(Token=token)
+        # run origin sampler initialization to create trace_lists
+        o_process: multiprocessing.Process = multiprocessing.Process(target=init_gen_trace_origin_sampler)
+        o_process.start()
+        test_sampler: VanillaSampling = VanillaSampling(observe_pres_effs=True,
+                                                        observe_static_fluents=True,
+                                                        dom=domain_filename,
+                                                        prob=prob_filename,
+                                                        plan_len=50,
+                                                        num_traces=1)
+        learn_trace_list: TraceList = test_sampler.generate_traces()
+        obs_trace_list = learn_trace_list.tokenize(Token=token)
         dom_name = test_sampler.problem.domain_name
 
-        t1: threading.Thread = threading.Thread(target=runnable_ext1)
-        t2: threading.Thread = threading.Thread(target=runnable_ext2)
-        t1.start()
-        t2.start()
-        t1.join()
-        t2.join()
-
-        "make traces"
-        orig_trace: TraceList = test_sampler.generate_traces()
+        p1_ext = multiprocessing.Process(target=run_ext1, args=(model1_traces,))
+        p2_ext = multiprocessing.Process(target=run_ext2, args=(model2_traces,))
+        p1_ext.start()
+        p2_ext.start()
+        p1_ext.join(timeout=300)
+        p2_ext.join(timeout=300)
 
         # compare each domain to the original domain to conclude fn, tp
         test_results = count_valid_transitions(random_sampler=test_sampler,
-                                               traces=orig_trace,
+                                               traces=orig_traces,
                                                dom=str(
                                                    (learned_dom1_path / f"dom{index}").resolve()))
         model_stats.update_stats({ModelName.model1: {"fn": test_results["fn"], "tp": test_results["tp"]}})
 
         test_results = count_valid_transitions(random_sampler=test_sampler,
-                                               traces=orig_trace,
+                                               traces=orig_traces,
                                                dom=str(
                                                    (learned_dom2_path / f"dom{index}").resolve()))
         model_stats.update_stats({ModelName.model2: {"fn": test_results["fn"], "tp": test_results["tp"]}})
 
         # compare the original domain to the learned domains to conclude fp, tn
-        test_results = count_valid_transitions(random_sampler=model1_sampler,
-                                               traces=mod1_trace,
+        test_results = count_valid_transitions(random_sampler=test_sampler,
+                                               traces=model1_traces,
                                                dom=str(
                                                    (orig_domains_dir / f"dom{index}").resolve()))
         model_stats.update_stats({ModelName.model1: {"fp": test_results["fn"], "tp": test_results["tp"]}})
 
-        test_results = count_valid_transitions(random_sampler=model2_sampler,
-                                               traces=mod2_trace,
+        test_results = count_valid_transitions(random_sampler=test_sampler,
+                                               traces=model2_traces,
                                                dom=str(
                                                    (orig_domains_dir / f"dom{index}").resolve()))
         model_stats.update_stats({ModelName.model2: {"fp": test_results["fn"], "tp": test_results["tp"]}})

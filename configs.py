@@ -53,7 +53,7 @@ def run_depots(f_out: str | None):
 
 problem2_info: dict = dict()
 
-problem2_info["depots"] = {'run?': True, "-e": 2, "-i": 4, "-t": 4, "-p": 5, "-h": 5, "-c": 5, "exc": run_depots}
+problem2_info["depots"] = {'run?': False, "-e": 2, "-i": 4, "-t": 4, "-p": 5, "-h": 5, "-c": 5, "exc": run_depots}
 problem2_info["grid"] = {'run?': True, 'x': 50, 'y': 50, '--shapes': 10, '--keys': 20, '--locks': 20,
                          'f_out': sys.stdout, "exc": run_grid}
 problem2_info["agricola"] = {'run?': False}
