@@ -1,23 +1,6 @@
 import os
 import subprocess
 import sys
-from typing import Any
-from typing import Callable
-
-
-# class DomainProbInfo:
-#     kwargs: dict[str, str] = dict()
-#     f_out: str = sys.stdout  # default
-#     run_command: Callable[[Any], Any]
-#     is_to_run: bool = True
-
-
-def setup():
-    run_command = (
-        f"./pddl-generators-main/build_all"
-    )
-    subprocess.check_output(run_command, shell=True)
-
 
 def run_grid(f_out: str | None):
     problem_args = problem2_info["grid"]
@@ -51,32 +34,67 @@ def run_depots(f_out: str | None):
     result = subprocess.check_output(run_command, shell=True)
 
 
+def run_gripper(f_out: str | None):
+    problem_args = problem2_info["gripper"]
+    output_file = f_out
+    subprocess.check_output("cd ..", shell=True)
+    run_command = (
+        f"./pddl-generators-main/gripper/gripper "
+        f"-n {problem_args.get('-n', 1)} "
+        f"> {output_file}"
+    )
+    result = subprocess.check_output(run_command, shell=True)
+
+def run_freecell(f_out: str | None):
+    problem_args = problem2_info["freecell"]
+    output_file = f_out
+    subprocess.check_output("cd ..", shell=True)
+    run_command = (
+        f"./pddl-generators-main/freecell/freecell "
+        f"-f {problem_args.get('-f', 1)} "
+        f"-c {problem_args.get('-c', 2)} "
+        f"-s {problem_args.get('-s', 2)} "
+        f"-i {problem_args.get('-i', 1)} "
+        f"-0 {problem_args.get('-0', 1)} "
+        f"> {output_file}"
+    )
+    result = subprocess.check_output(run_command, shell=True)
+
+def run_hanoi(f_out: str | None):
+    problem_args = problem2_info["hanoi"]
+    output_file = f_out
+    subprocess.check_output("cd ..", shell=True)
+    run_command = (
+        f"./pddl-generators-main/hanoi/hanoi "
+        f"-n {problem_args.get('-n', 1)} "
+        f"> {output_file}"
+    )
+    result = subprocess.check_output(run_command, shell=True)
+
+
+
+
+
 problem2_info: dict = dict()
+#works:
+problem2_info["hanoi"] = {'run?': False, '-n': 11,
+                         'f_out': sys.stdout, "exc": run_hanoi, "plan_len":15, "num_traces": 50}
+problem2_info["gripper"] = {'run?': True, '-n': 10,
+                         'f_out': sys.stdout, "exc": run_gripper, "plan_len":15, "num_traces": 50}
 
-problem2_info["depots"] = {'run?': False, "-e": 2, "-i": 4, "-t": 4, "-p": 5, "-h": 5, "-c": 5, "exc": run_depots}
-problem2_info["grid"] = {'run?': True, 'x': 50, 'y': 50, '--shapes': 10, '--keys': 20, '--locks': 20,
-                         'f_out': sys.stdout, "exc": run_grid}
-problem2_info["agricola"] = {'run?': False}
-problem2_info["barman"] = {'run?': False}
-problem2_info["cavediving"] = {'run?': False}
-problem2_info["childsnack"] = {'run?': False}
-problem2_info["citycar"] = {'run?': False}
-problem2_info["elevators"] = {'run?': False}
-problem2_info["floortile"] = {'run?': False}
+# to figure out configuration\problem
+problem2_info["depots"] = {'run?': False, "-e": 5, "-i": 5, "-t": 5, "-p": 15, "-h": 15, "-c": 10, "exc": run_depots,
+                          "plan_len":15, "num_traces": 50}
+problem2_info["grid"] = {'run?': False, 'x': 5, 'y': 5, '--shapes': 4, '--keys': 8, '--locks': 8,
+                         'f_out': sys.stdout, "exc": run_grid, "plan_len":15, "num_traces": 50 }
 
-problem2_info["hiking"] = {'run?': False}
-problem2_info["matchcellar"] = {'run?': False}
-problem2_info["minigrid"] = {'run?': False}
-problem2_info["nurikabe"] = {'run?': False}
-problem2_info["openstacks"] = {'run?': False}
-problem2_info["pathways"] = {'run?': False}
-problem2_info["pegsol"] = {'run?': False}
-problem2_info["scanalyzer"] = {'run?': False}
-problem2_info["snake"] = {'run?': False}
-problem2_info["spanner"] = {'run?': False}
-problem2_info["spider"] = {'run?': False}
-problem2_info["termes"] = {'run?': False}
-problem2_info["tetris"] = {'run?': False}
-problem2_info["tidybot"] = {'run?': False}
-problem2_info["transport"] = {'run?': False}
-problem2_info["woodworking"] = {'run?': False}
+
+problem2_info["driverlog"] = {'run?': False, '-n': 10,
+                         'f_out': sys.stdout, "exc": run_gripper, "plan_len":15, "num_traces": 50}
+problem2_info["ferry"] = {'run?': False, '-n': 10,
+                         'f_out': sys.stdout, "exc": run_gripper, "plan_len":15, "num_traces": 50}
+
+
+
+
+
