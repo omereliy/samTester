@@ -1,6 +1,7 @@
 import os
 import subprocess
 import sys
+from macq.extract.DomainSort import DomainSort
 
 def run_grid(f_out: str | None):
     problem_args = problem2_info["grid"]
@@ -73,20 +74,24 @@ def run_hanoi(f_out: str | None):
 
 
 
-
-
 problem2_info: dict = dict()
 #works:
-problem2_info["hanoi"] = {'run?': False, '-n': 11,
+problem2_info["hanoi"] = {'run?': True, '-n': 15,
                          'f_out': sys.stdout, "exc": run_hanoi, "plan_len":15, "num_traces": 50}
-problem2_info["gripper"] = {'run?': True, '-n': 10,
-                         'f_out': sys.stdout, "exc": run_gripper, "plan_len":15, "num_traces": 50}
+
+problem2_info["gripper"] = {'run?': False,
+                            '-n': 11,
+                         'f_out': sys.stdout,
+                            "exc": run_gripper,
+                            "plan_len":15,
+                            "num_traces": 50}
 
 # to figure out configuration\problem
 problem2_info["depots"] = {'run?': False, "-e": 5, "-i": 5, "-t": 5, "-p": 15, "-h": 15, "-c": 10, "exc": run_depots,
                           "plan_len":15, "num_traces": 50}
+
 problem2_info["grid"] = {'run?': False, 'x': 5, 'y': 5, '--shapes': 4, '--keys': 8, '--locks': 8,
-                         'f_out': sys.stdout, "exc": run_grid, "plan_len":15, "num_traces": 50 }
+                         'f_out': sys.stdout, "exc": run_grid, "plan_len":50, "num_traces": 30 }
 
 
 problem2_info["driverlog"] = {'run?': False, '-n': 10,
