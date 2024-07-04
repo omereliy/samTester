@@ -6,6 +6,10 @@
 /new_tester/dgen/test_probs
 /new_tester/satelite/learn_probs
 /new_tester/satelite/test_probs
+/new_tester/sat_typed/test_probs
+/new_tester/sat_typed/learn_probs
+
+
 *.log
 /new_tester/IPC3
 
