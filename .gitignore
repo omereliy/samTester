@@ -1,3 +1,11 @@
-./pddl-generators-main
 /depots_problem.pddl/
+/old_tester
+/new_tester/rover/test_probs
+/new_tester/rover/learn_probs
+/new_tester/dgen/learn_probs
+/new_tester/dgen/test_probs
+/new_tester/satelite/learn_probs
+/new_tester/satelite/test_probs
+*.log
+/new_tester/IPC3
 
