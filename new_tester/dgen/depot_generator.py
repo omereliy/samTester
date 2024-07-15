@@ -38,27 +38,17 @@ commands = [
     "./depotgen 1817 -u 6 6 6 20 15 20"
 ]
 
-random_commands = [
-    f"./depotgen {random.randint(1818, 5656)} -u 1 2 2 3 3 {random.randint(2, 15)}",
-    f"./depotgen {random.randint(1234, 5451)} -u 1 2 2 6 3 {random.randint(6, 15)}",
-    f"./depotgen {random.randint(4534, 7654)} -u 3 3 2 10 6 {random.randint(6, 15)}",
-    f"./depotgen {random.randint(1916, 6587)} -u 2 2 4 8 8 6 {random.randint(6, 15)}",
-    f"./depotgen {random.randint(1817, 8715)} -u 6 6 6 20 15 {random.randint(8, 20)}",
-
-]
-
-
 def generate_problems(output_directory: Path):
     print("Generating problems for the depot domain...")
     i = 0
     for _ in range(0, 20):
         random_commands = [
-            f"./depotgen {random.randint(1818, 5656)} -u 1 2 2 3 3 {random.randint(2, 15)}",
+            f"./depotgen {random.randint(1818, 5656)} -u 1 2 2 3 3 {random.randint(2, 8)}",
+            f"./depotgen {random.randint(1818, 5656)} -u 1 2 2 3 3 {random.randint(9, 15)}",
             f"./depotgen {random.randint(1234, 5451)} -u 1 2 2 6 3 {random.randint(6, 15)}",
-            f"./depotgen {random.randint(4534, 7654)} -u 3 3 2 10 6 {random.randint(6, 15)}",
-            f"./depotgen {random.randint(1916, 6587)} -u 2 2 4 8 8 6 {random.randint(6, 15)}",
-            f"./depotgen {random.randint(1817, 8715)} -u 6 6 6 20 15 {random.randint(8, 20)}",
-
+            f"./depotgen {random.randint(2000, 6000)} -u 3 3 2 10 6 {random.randint(6, 15)}",
+            f"./depotgen {random.randint(6000, 7654)} -u 3 3 2 10 6 {random.randint(6, 15)}"
+            #f"./depotgen {random.randint(6000, 7654)} -u 2 2 4 8 8 {random.randint(6, 15)}",
         ]
         for command in random_commands:
             problem_name = f"pfile{i+1}.pddl"

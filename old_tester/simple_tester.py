@@ -3,8 +3,8 @@ from collections import defaultdict
 from pathlib import Path
 import os
 from macq.extract import extract
-from macq.trace import Fluent, TraceList, State, PlanningObject
-from macq.generate.pddl import VanillaSampling
+from macq.trace import Fluent, TraceList, State, PlanningObject, Action
+from macq.generate.pddl import VanillaSampling, Generator
 from macq.observation.identity_observation import IdentityObservation
 
 
@@ -185,6 +185,8 @@ def compare(sampler: VanillaSampling,
     return res
 
 
+
+
 def extract_typing_from_sampler(sampler: VanillaSampling) -> dict[str, str]:
     objects: set[PlanningObject] = set()
     if isinstance(sampler.traces, TraceList):
@@ -280,6 +282,56 @@ def clean_dirs():
         delete_files_in_directory(direct_path)
     print("All files deleted successfully.")
 
+def comp():
+    fp = 0
+    tp = 0
+    learned_sampler = Generator(dom=(base / "learned_dom.pddl").__str__(),
+                                prob= (base / "prob.pddl").__str__(),
+                                observe_static_fluents=True,
+                                observe_pres_effs=True)
+    original_sampler = Generator(dom=(base / "orig_dom.pddl").__str__(),
+                                prob= (base / "prob.pddl").__str__(),
+                                observe_static_fluents=True,
+                                observe_pres_effs=True)
+    p = learned_sampler.generate_plan()
+    t = learned_sampler.generate_single_trace_from_plan(p)
+    i = 1
+    for act in t.actions:
+        for sas in t.get_sas_triples(action=act):
+            init: set[Fluent] = set()
+            goal: set[Fluent] = set()
+            if isinstance(sas.pre_state, State):
+                init.update({f for f in sas.pre_state.fluents.keys() if sas.pre_state.fluents[f]})
+            if isinstance(sas.post_state, State):
+                goal.update({f for f in sas.post_state.fluents.keys() if sas.post_state.fluents[f]})
+            original_sampler.change_goal(goal_fluents=goal)
+            original_sampler.change_init(init_fluents=init)
+            try:
+                if isinstance(act, Action):
+                    if act.precond in init and act.add in goal and act.delete not in goal:
+                        tp+=1
+                        print ("tp")
+
+                    else:
+                        fp+=1
+                        print(f"failure in trans\n"
+                              f"init: {init}\n"
+                              f"act: {act}\n"
+                              f"goal: {goal}\n")
+
+            except Exception as error:
+                fp += 1
+                print(f"failure in trans\n"
+                      f"init: {init}\n"
+                      f"act: {act}\n"
+                      f"goal: {goal}\n")
+                print(error.__str__())
+                continue
+
+
+
+if __name__ == '__main__':
+    comp()
 
 # def generate_problems():
 #     for i, k in enumerate(set(configs.problem2_info.keys()).difference({key for key in configs.problem2_info.keys()
