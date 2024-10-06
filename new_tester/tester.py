@@ -34,7 +34,7 @@ def setup_logger(name, log_file, level=logging.DEBUG):
     file_handl.setFormatter(file_formatter)
 
     # Add handlers to the logger
-    logger.addHandler(file_handler)
+    logger.addHandler(file_handl)
     return logger
 
 
@@ -128,6 +128,12 @@ def generate_obs_tlist(dom_dir_path, pddl_dir_path, problems_size, logger):
             plan = generator.generate_plan()
             if len(plan.actions) > 0:
                 tr = generator.generate_single_trace_from_plan(plan)
+                for action in tr.actions:
+                    for index, obj in enumerate(action.obj_params):
+                        if any(obj == other_obj for j, other_obj in enumerate(action.obj_params) if j != index):
+                            logger.debug(f"object {obj.__str__()} is provided mor than once as an argument, signature is:\n"
+                                         f"{action.details()}")
+
                 trace_list.append(tr)
                 action_sum += len(plan.actions)
                 logger.debug(f"Added {len(plan.actions)} actions from {file} to trace list")
@@ -219,13 +225,13 @@ def extract_and_compare(dir_path: Path, domain_pddl_path: str, learned_dom_path:
 def run_test():
     with concurrent.futures.ThreadPoolExecutor(max_workers=4) as executor:
         futures = [
-        # executor.submit(extract_and_compare,
-        #                 depot_dir,
-        #                 depots_utype_dom,
-        #                 learned_depots_dom_path,
-        #                 depot_logger,
-        #                 "depot"
-        #                 ),
+        executor.submit(extract_and_compare,
+                        depot_dir,
+                        depots_utype_dom,
+                        learned_depots_dom_path,
+                        depot_logger,
+                        "depot"
+                        ),
 
         # executor.submit(extract_and_compare,
         #                 satelite_dir,
@@ -235,12 +241,12 @@ def run_test():
         #                 "satellite"
         #                 ),
 
-        executor.submit(extract_and_compare,
-                        rover_dir,
-                        rover_utype_dom,
-                        learned_rover_dom_path,
-                        rover_logger,
-                        "rover"),
+        # executor.submit(extract_and_compare,
+        #                 rover_dir,
+        #                 rover_utype_dom,
+        #                 learned_rover_dom_path,
+        #                 rover_logger,
+        #                 "rover"),
         # executor.submit(extract_and_compare,
         #                 driver_log_dir,
         #                 driverlog_utype_dom,

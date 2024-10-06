@@ -4,7 +4,7 @@
 ;;; 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(define (problem rover_prob)
+(define (problem some_prob)
     (:domain rover)
 
     (:objects

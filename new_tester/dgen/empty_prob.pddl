@@ -4,7 +4,7 @@
 ;;; 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(define (problem depot_prob)
+(define (problem some_prob)
     (:domain depot)
 
     (:objects

@@ -4,8 +4,8 @@
 ;;; 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(define (problem depot_prob)
-    (:domain depot)
+(define (problem rover_prob)
+    (:domain rover)
 
     (:objects
         

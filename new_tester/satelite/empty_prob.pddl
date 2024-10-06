@@ -4,7 +4,7 @@
 ;;; 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(define (problem satellite_prob)
+(define (problem some_prob)
     (:domain satellite)
 
     (:objects
