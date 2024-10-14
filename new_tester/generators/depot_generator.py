@@ -3,7 +3,7 @@ from pathlib import Path
 import random
 
 # Define the list of commands without the redirection part
-commands = [
+untyped_commands = [
     "./depotgen 1818 -u 1 2 2 3 3 2",
     "./depotgen 7512 -u 1 2 2 3 3 4",
     "./depotgen 1935 -u 1 2 2 3 3 6",
@@ -38,6 +38,40 @@ commands = [
     "./depotgen 1817 -u 6 6 6 20 15 20"
 ]
 
+typed_commands = [
+    "./depotgen 1818 1 2 2 3 3 2",
+    "./depotgen 7512 1 2 2 3 3 4",
+    "./depotgen 1935 1 2 2 3 3 6",
+    "./depotgen 6512 1 2 2 3 3 8",
+    "./depotgen 1212 1 2 2 3 3 10",
+    "./depotgen 5656 1 2 2 3 3 15",
+
+    # Increase surfaces
+    "./depotgen 1234 1 2 2 6 3 6",
+    "./depotgen 4321 1 2 2 6 3 10",
+    "./depotgen 5451 1 2 2 6 3 15",
+
+    # Increase locations
+    "./depotgen 7654 3 3 2 6 6 6",
+    "./depotgen 8765 3 3 2 6 6 10",
+    "./depotgen 9876 3 3 2 6 6 15",
+
+    # Increase surfaces and locations
+    "./depotgen 5646 3 3 2 10 6 6",
+    "./depotgen 7654 3 3 2 10 6 10",
+    "./depotgen 4534 3 3 2 10 6 15",
+
+    # Increase general resources (trucks, hoists)
+    "./depotgen 4398 2 2 4 8 8 6",
+    "./depotgen 6587 2 2 4 8 8 10",
+    "./depotgen 1916 2 2 4 8 8 15",
+
+    # Increase scale
+    "./depotgen 6178 4 4 4 10 8 8",
+    "./depotgen 7615 4 4 4 10 8 15",
+    "./depotgen 8715 6 6 6 20 15 10",
+    "./depotgen 1817 6 6 6 20 15 20"
+]
 def generate_problems(output_directory: Path):
     print("Generating problems for the depot domain...")
     i = 0

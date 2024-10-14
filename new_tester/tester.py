@@ -44,7 +44,7 @@ main_logger.handlers.clear()
 main_logger.setLevel(logging.DEBUG)
 
 # open('logs//main_debug.log', "w").close()
-file_handler = logging.FileHandler('logs//main_debug.log')
+file_handler = logging.FileHandler('outputs/logs//main_debug.log')
 file_handler.setLevel(logging.DEBUG)
 file_formatter1 = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 file_handler.setFormatter(file_formatter1)
@@ -66,10 +66,10 @@ console_handler.setFormatter(console_formatter)
 main_logger.addHandler(console_handler)
 
 # Specific loggers
-depot_logger = setup_logger('DepotLogger', 'logs//depot_debug.log')
-rover_logger = setup_logger('RoverLogger', 'logs//rover_debug.log')
-satellite_logger = setup_logger('SatelliteLogger', 'logs//satellite_debug.log')
-driver_log_logger = setup_logger('DriverLogger', 'logs//driver_debug.log')
+depot_logger = setup_logger('DepotLogger', 'outputs/logs//depot_debug.log')
+rover_logger = setup_logger('RoverLogger', 'outputs/logs//rover_debug.log')
+satellite_logger = setup_logger('SatelliteLogger', 'outputs/logs//satellite_debug.log')
+driver_log_logger = setup_logger('DriverLogger', 'outputs/logs//driver_debug.log')
 
 # base dir
 base = Path(__file__).parent

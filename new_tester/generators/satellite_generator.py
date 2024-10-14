@@ -3,7 +3,7 @@ from pathlib import Path
 import random
 
 # Define the list of commands
-commands = [
+untyped_commands = [
     "./satgen -u 4000 1 3 3 3 4",
     "./satgen -u 4123 1 3 3 3 5",
     "./satgen -u 7123 2 3 3 3 5",
@@ -30,6 +30,35 @@ commands = [
     "./satgen -u 0001 5 5 5 5 20",
     "./satgen -u 0002 5 8 8 5 20",
     "./satgen -u 0003 5 10 10 5 20"
+]
+
+typed_commands = [
+    "./satgen 4000 1 3 3 3 4",
+    "./satgen 4123 1 3 3 3 5",
+    "./satgen 7123 2 3 3 3 5",
+    "./satgen 7788 2 3 3 3 7",
+    "./satgen 1212 3 3 3 3 7",
+    "./satgen 7512 3 3 4 4 7",
+    "./satgen 8111 4 3 4 5 7",
+    "./satgen 0099 4 3 4 5 10",
+
+    # More serious numbers of observations
+    "./satgen 1412 5 3 5 5 10",
+    "./satgen 1792 5 3 5 5 12",
+    "./satgen 1891 5 3 5 5 15",
+    "./satgen 2000 5 3 5 5 20",
+    "./satgen 2002 5 3 5 5 25",
+
+    # Check exploitation of parallelism - more satellites
+    "./satgen 2222 6 3 5 5 20",
+    "./satgen 7777 8 3 5 5 20",
+    "./satgen 8888 10 3 5 5 20",
+    "./satgen 9999 12 3 5 5 20",
+
+    # Finally, more instruments on satellites
+    "./satgen 0001 5 5 5 5 20",
+    "./satgen 0002 5 8 8 5 20",
+    "./satgen 0003 5 10 10 5 20"
 ]
 
 random_commands = [
@@ -74,7 +103,7 @@ def _export_problem(problem_path, result):
 
 
 def main():
-    output_directory = Path("test_probs")
+    output_directory = Path("../probs/untyped_probs/satellite/test_probs")
     output_directory.mkdir(exist_ok=True)
     generate_problems(output_directory)
 

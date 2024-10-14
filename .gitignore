@@ -1,13 +1,13 @@
 /depots_problem.pddl/
 /old_tester
-/new_tester/rover/test_probs
-/new_tester/rover/learn_probs
-/new_tester/dgen/learn_probs
-/new_tester/dgen/test_probs
-/new_tester/satelite/learn_probs
-/new_tester/satelite/test_probs
-/new_tester/sat_typed/test_probs
-/new_tester/sat_typed/learn_probs
+/new_tester/probs/untyped_probs/rover/test_probs
+/new_tester/probs/untyped_probs/rover/learn_probs
+/new_tester/probs/untyped_probs/depot/learn_probs
+/new_tester/probs/untyped_probs/depot/test_probs
+/new_tester/probs/untyped_probs/satellite/learn_probs
+/new_tester/probs/untyped_probs/satellite/test_probs
+/new_tester/satellite_typed/test_probs
+/new_tester/satellite_typed/learn_probs
 
 
 *.log
