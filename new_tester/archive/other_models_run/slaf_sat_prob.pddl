@@ -4,8 +4,8 @@
 ;;; 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(define (problem rover_prob)
-    (:domain rover)
+(define (problem satellite_prob)
+    (:domain satellite)
 
     (:objects
         

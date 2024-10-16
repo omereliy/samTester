@@ -2,7 +2,7 @@ import subprocess
 from pathlib import Path
 import random
 # Define the list of commands
-commands = [
+untyped_commands = [
     "./rovergen 1234 -u 1 4 2 1 1",
     "./rovergen 4213 -u 1 4 2 2 2",
     "./rovergen 3726 -u 2 4 2 2 2",
@@ -31,6 +31,34 @@ commands = [
     "./rovergen 7182 -u 8 25 8 5 8"
 ]
 
+typed_commands = [
+    "./rovergen 1234 1 4 2 1 1",
+    "./rovergen 4213 1 4 2 2 2",
+    "./rovergen 3726 2 4 2 2 2",
+    "./rovergen 6232 2 4 3 3 2",
+    "./rovergen 2435 2 4 3 3 3",
+
+    # Slightly more challenging
+    "./rovergen 2312 2 6 2 2 3",
+    "./rovergen 4123 3 6 2 2 3",
+    "./rovergen 1423 4 6 3 3 3",
+    "./rovergen 4132 4 7 3 4 3",
+    "./rovergen 8271 4 7 4 4 4",
+    "./rovergen 7126 4 8 3 3 3",
+
+    # Quite hard
+    "./rovergen 5146 4 8 4 4 4",
+    "./rovergen 6152 4 9 4 4 4",
+    "./rovergen 1425 4 10 4 4 4",
+    "./rovergen 4135 4 11 5 4 4",
+    "./rovergen 5142 4 12 5 4 4",
+
+    # Very hard
+    "./rovergen 5624 6 15 6 5 5",
+    "./rovergen 4621 6 20 7 5 5",
+    "./rovergen 8327 6 20 8 5 6",
+    "./rovergen 7182 8 25 8 5 8"
+]
 
 
 
@@ -65,7 +93,7 @@ def _export_problem(problem_path, result):
 
 
 def main():
-    output_directory = Path("test_probs")
+    output_directory = Path("../probs/untyped_probs/rover/test_probs")
     output_directory.mkdir(exist_ok=True)
     generate_problems(output_directory)
 
