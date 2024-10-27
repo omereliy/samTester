@@ -95,7 +95,7 @@ def get_success_table(dom_path, probs_dir: str, sols_dir)-> dict[str, bool]:
 
 #==========================example=======================
 def solve_directory_probs_example():
-    solve_directory_probs(depots_utype_dom, f"{depot_dir}/learn_probs", 'outputs/plans/depot/learn_plans')
+    solve_directory_probs(depots_utype_dom, f"{depot_dir}/learn_probs", 'outputs/plans/depots/learn_plans')
 
 
 

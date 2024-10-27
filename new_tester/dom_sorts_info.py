@@ -5,11 +5,13 @@ class DomSortsInfo(ABC):
     sorts: list[Sort] = list()
     action_2_sort: dict[str, list[str]] = dict()
     fluent_2_sort: dict[str, list[str]] = dict()
+    dom_name = ""
 
-    def __init__(self, action_2_sort, fluent_2_sort, sorts):
+    def __init__(self, action_2_sort, fluent_2_sort, sorts, dom_name):
         self.action_2_sort = action_2_sort
         self.fluent_2_sort = fluent_2_sort
         self.sorts = sorts
+        self.dom_name = dom_name
 
     def get_action_2_sort(self) -> dict[str, list[str]]:
         return self.action_2_sort
@@ -21,7 +23,7 @@ class DomSortsInfo(ABC):
     def get_obj_type(self, obj_name: str) -> Sort:
         pass
 
-    def get_obj_2_type_dict(self, obj_names: list[str]) -> dict[str, Sort]:
+    def get_obj_2_type_dict(self, obj_names: set[str]) -> dict[str, Sort]:
         return {ob_name: self.get_obj_type(ob_name) for ob_name in obj_names}
 
 
@@ -55,7 +57,7 @@ class DepotInfo(DomSortsInfo):
             "available": ["Hoist"],  # (x - hoist)
             "clear": ["Surface"]  # (x - surface)
         }
-        super().__init__(action_2_sort, fluent_2_sort, sorts)
+        super().__init__(action_2_sort, fluent_2_sort, sorts, "depots")
 
     def get_obj_type(self, obj_name: str) -> Sort:
         if "depot" in obj_name:
@@ -84,7 +86,6 @@ class RoverInfo(DomSortsInfo):
             Sort("Lander"),
             Sort("Objective")
         ]
-
         action_2_sort = {
             "navigate": ["Rover", "Waypoint", "Waypoint"],  # (r - rover, w1 - waypoint, w2 - waypoint)
             "sample_soil": ["Rover", "Store", "Waypoint"],  # (r - rover, s - store, w - waypoint)
@@ -96,8 +97,6 @@ class RoverInfo(DomSortsInfo):
             "communicate_rock_data": ["Rover", "Lander", "Waypoint", "Waypoint", "Waypoint"],  # (r - rover, l - lander, w1 - waypoint, w2 - waypoint, p - waypoint)
             "communicate_image_data": ["Rover", "Lander", "Objective", "Mode", "Waypoint", "Waypoint"]  # (r - rover, l - lander, o - objective, m - mode, w1 - waypoint, w2 - waypoint)
         }
-
-        # Fluent (Predicate) to Sort Mapping
         fluent_2_sort = {
             "at": ["Rover", "Waypoint"],  # (r - rover, w - waypoint)
             "at_lander": ["Lander", "Waypoint"],  # (l - lander, w - waypoint)
@@ -125,7 +124,7 @@ class RoverInfo(DomSortsInfo):
             "on_board": ["Camera", "Rover"],  # (c - camera, r - rover)
             "channel_free": ["Lander"],  # (l - lander)
         }
-        super().__init__(action_2_sort, fluent_2_sort, sorts)
+        super().__init__(action_2_sort, fluent_2_sort, sorts, "rover")
 
     def get_obj_type(self, obj_name: str) -> Sort:
         if "rover" in obj_name and "store" in obj_name:
@@ -173,7 +172,7 @@ class SatelliteInfo(DomSortsInfo):
             "have_image": ["direction", "mode"],  # (d - direction, m - mode)
             "calibration_target": ["instrument", "direction"]  # (i - instrument, d - direction)
         }
-        super().__init__(action_2_sort, fluent_2_sort, sorts)
+        super().__init__(action_2_sort, fluent_2_sort, sorts, "satellite")
 
     def get_obj_type(self, obj_name: str) -> Sort:
         if "satellite" in obj_name:
