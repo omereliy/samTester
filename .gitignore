@@ -2,8 +2,8 @@
 /old_tester
 /new_tester/probs/untyped_probs/rover/test_probs
 /new_tester/probs/untyped_probs/rover/learn_probs
-/new_tester/probs/untyped_probs/depot/learn_probs
-/new_tester/probs/untyped_probs/depot/test_probs
+/new_tester/probs/untyped_probs/depots/learn_probs
+/new_tester/probs/untyped_probs/depots/test_probs
 /new_tester/probs/untyped_probs/satellite/learn_probs
 /new_tester/probs/untyped_probs/satellite/test_probs
 /new_tester/satellite_typed/test_probs

@@ -72,21 +72,23 @@ random_commands = [
 ]
 
 
-def generate_problems(output_directory: Path):
+def generate_problems(output_directory: Path, is_learn=False):
     print("Generating problems for the satellite domain...")
-    i = 0
+    i = 1
     for _ in range(0, 25):
         random_commands = [
-            f"./satgen -u {random.randint(1000, 7789)} 1 3 3 3 {random.randint(4, 10)}",
+            f"./satgen {random.randint(1000, 7789)} 1 3 3 3 {random.randint(4, 10)}",
             # More serious numbers of observations
-            f"./satgen -u {random.randint(1412, 2003)} 5 3 5 5 {random.randint(10, 25)}",
+            f"./satgen {random.randint(1412, 2003)} 5 3 5 5 {random.randint(10, 25)}",
             # Check exploitation of parallelism - more satellites
-            f"./satgen -u {random.randint(2222, 9999)} 6 3 5 5 20",
+            f"./satgen {random.randint(2222, 9999)} 6 3 5 5 20",
             # Finally, more instruments on satellites
-            f"./satgen -u 0001 5 {random.randint(5, 10)} {random.randint(5, 10)} 5 20",
+            f"./satgen 0001 5 {random.randint(5, 10)} {random.randint(5, 10)} 5 20",
         ]
         for command in random_commands:
-            problem_name = f"pfile{i + 1}.pddl"
+            if is_learn and i > 10:
+                break
+            problem_name = f"pfile{i}.pddl"
             problem_path = output_directory / problem_name
             print(f"Generating problem {problem_name} with command: {command}")
             try:
@@ -103,9 +105,10 @@ def _export_problem(problem_path, result):
 
 
 def main():
-    output_directory = Path("../probs/untyped_probs/satellite/test_probs")
+    base = Path(__file__).parent.parent
+    output_directory = base / "probs" / "typed_probs" / "satellite" / "learn_probs"
     output_directory.mkdir(exist_ok=True)
-    generate_problems(output_directory)
+    generate_problems(output_directory, True)
 
 
 if __name__ == "__main__":

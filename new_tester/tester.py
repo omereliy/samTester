@@ -3,7 +3,6 @@ import signal
 import threading
 from pathlib import Path
 import os
-
 import colorlog
 from macq import extract
 from macq.generate import Plan

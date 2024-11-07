@@ -1,5 +1,17 @@
+import os
+import re
 from abc import ABC, abstractmethod
 from macq.extract.learned_sort import Sort
+
+
+def sort_files_numerically(directory) -> list[str]:
+    # List all files in the directory
+    files = os.listdir(directory)
+
+    # Sort files by extracting the number after "pfile" and converting it to an integer
+    sorted_files = sorted(files, key=lambda x: int(re.search(r'\d+', x).group()))
+
+    return sorted_files
 
 class DomSortsInfo(ABC):
     sorts: list[Sort] = list()
@@ -30,117 +42,117 @@ class DomSortsInfo(ABC):
 class DepotInfo(DomSortsInfo):
     def __init__(self):
         sorts: list[Sort] = [Sort("object"),
-                             Sort("Place","object"),
-                             Sort("Locatable","object"),
-                             Sort("Distributor", "Place"),
-                             Sort("Depot", "Place"),
-                             Sort("Truck", "Locatable"),
-                             Sort("Hoist", "Locatable"),
-                             Sort("Surface", "Locatable"),
-                             Sort("Crate", "Surface"),
-                             Sort("Pallet", "Surface")
+                             Sort("place","object"),
+                             Sort("locatable","object"),
+                             Sort("distributor", "place"),
+                             Sort("depot", "place"),
+                             Sort("truck", "locatable"),
+                             Sort("hoist", "locatable"),
+                             Sort("surface", "locatable"),
+                             Sort("crate", "surface"),
+                             Sort("pallet", "surface")
                              ]
         action_2_sort = {
-            "Drive": ["Truck", "Place", "Place"],  # (x - truck, y - place, z - place)
-            "Lift": ["Hoist", "Crate", "Surface", "Place"],  # (x - hoist, y - crate, z - surface, p - place)
-            "Drop": ["Hoist", "Crate", "Surface", "Place"],  # (x - hoist, y - crate, z - surface, p - place)
-            "Load": ["Hoist", "Crate", "Truck", "Place"],  # (x - hoist, y - crate, z - truck, p - place)
-            "Unload": ["Hoist", "Crate", "Truck", "Place"]  # (x - hoist, y - crate, z - truck, p - place)
+            "drive": ["truck", "place", "place"],  # (x - truck, y - place, z - place)
+            "lift": ["hoist", "crate", "surface", "place"],  # (x - hoist, y - crate, z - surface, p - place)
+            "drop": ["hoist", "crate", "surface", "place"],  # (x - hoist, y - crate, z - surface, p - place)
+            "load": ["hoist", "crate", "truck", "place"],  # (x - hoist, y - crate, z - truck, p - place)
+            "unload": ["hoist", "crate", "truck", "place"]  # (x - hoist, y - crate, z - truck, p - place)
         }
 
         # Fluent (Predicate) to Sort Mapping (with lists preserving argument order)
         fluent_2_sort = {
-            "at": ["Locatable", "Place"],  # (x - locatable, y - place)
-            "on": ["Crate", "Surface"],  # (x - crate, y - surface)
-            "in": ["Crate", "Truck"],  # (x - crate, y - truck)
-            "lifting": ["Hoist", "Crate"],  # (x - hoist, y - crate)
-            "available": ["Hoist"],  # (x - hoist)
-            "clear": ["Surface"]  # (x - surface)
+            "at": ["locatable", "place"],  # (x - locatable, y - place)
+            "on": ["crate", "surface"],  # (x - crate, y - surface)
+            "in": ["crate", "truck"],  # (x - crate, y - truck)
+            "lifting": ["hoist", "crate"],  # (x - hoist, y - crate)
+            "available": ["hoist"],  # (x - hoist)
+            "clear": ["surface"]  # (x - surface)
         }
         super().__init__(action_2_sort, fluent_2_sort, sorts, "depots")
 
     def get_obj_type(self, obj_name: str) -> Sort:
         if "depot" in obj_name:
-            return Sort("Depot", "Place")
+            return Sort("depot", "place")
         elif "distributor" in obj_name:
-            return Sort("Distributor", "Place")
+            return Sort("distributor", "place")
         elif "truck" in obj_name:
-            return Sort("Truck", "Locatable")
+            return Sort("truck", "locatable")
         elif "crate" in obj_name:
-            return Sort("Crate", "Surface")
+            return Sort("crate", "surface")
         elif "pallet" in obj_name:
-            return Sort("Pallet", "Surface")
+            return Sort("pallet", "surface")
         elif "hoist" in obj_name:
-            return Sort("Hoist", "Locatable")
+            return Sort("hoist", "locatable")
 
 
 class RoverInfo(DomSortsInfo):
 
     def __init__(self):
         sorts: list[Sort] = [
-            Sort("Rover"),  # Supertypes first
-            Sort("Waypoint"),
-            Sort("Store"),
-            Sort("Camera"),
-            Sort("Mode"),
-            Sort("Lander"),
-            Sort("Objective")
+            Sort("rover"),  # Supertypes first
+            Sort("waypoint"),
+            Sort("store"),
+            Sort("camera"),
+            Sort("mode"),
+            Sort("lander"),
+            Sort("objective")
         ]
         action_2_sort = {
-            "navigate": ["Rover", "Waypoint", "Waypoint"],  # (r - rover, w1 - waypoint, w2 - waypoint)
-            "sample_soil": ["Rover", "Store", "Waypoint"],  # (r - rover, s - store, w - waypoint)
-            "sample_rock": ["Rover", "Store", "Waypoint"],  # (r - rover, s - store, w - waypoint)
-            "drop": ["Rover", "Store"],  # (r - rover, s - store)
-            "calibrate": ["Rover", "Camera", "Objective", "Waypoint"],  # (r - rover, c - camera, o - objective, w - waypoint)
-            "take_image": ["Rover", "Waypoint", "Objective", "Camera", "Mode"],  # (r - rover, w - waypoint, o - objective, c - camera, m - mode)
-            "communicate_soil_data": ["Rover", "Lander", "Waypoint", "Waypoint", "Waypoint"],  # (r - rover, l - lander, w1 - waypoint, w2 - waypoint, p - waypoint)
-            "communicate_rock_data": ["Rover", "Lander", "Waypoint", "Waypoint", "Waypoint"],  # (r - rover, l - lander, w1 - waypoint, w2 - waypoint, p - waypoint)
-            "communicate_image_data": ["Rover", "Lander", "Objective", "Mode", "Waypoint", "Waypoint"]  # (r - rover, l - lander, o - objective, m - mode, w1 - waypoint, w2 - waypoint)
+            "navigate": ["rover", "waypoint", "waypoint"],  # (r - rover, w1 - waypoint, w2 - waypoint)
+            "sample_soil": ["rover", "store", "waypoint"],  # (r - rover, s - store, w - waypoint)
+            "sample_rock": ["rover", "store", "waypoint"],  # (r - rover, s - store, w - waypoint)
+            "drop": ["rover", "store"],  # (r - rover, s - store)
+            "calibrate": ["rover", "camera", "objective", "waypoint"],  # (r - rover, c - camera, o - objective, w - waypoint)
+            "take_image": ["rover", "waypoint", "objective", "camera", "mode"],  # (r - rover, w - waypoint, o - objective, c - camera, m - mode)
+            "communicate_soil_data": ["rover", "lander", "waypoint", "waypoint", "waypoint"],  # (r - rover, l - lander, w1 - waypoint, w2 - waypoint, p - waypoint)
+            "communicate_rock_data": ["rover", "lander", "waypoint", "waypoint", "waypoint"],  # (r - rover, l - lander, w1 - waypoint, w2 - waypoint, p - waypoint)
+            "communicate_image_data": ["rover", "lander", "objective", "mode", "waypoint", "waypoint"]  # (r - rover, l - lander, o - objective, m - mode, w1 - waypoint, w2 - waypoint)
         }
         fluent_2_sort = {
-            "at": ["Rover", "Waypoint"],  # (r - rover, w - waypoint)
-            "at_lander": ["Lander", "Waypoint"],  # (l - lander, w - waypoint)
-            "can_traverse": ["Rover", "Waypoint", "Waypoint"],  # (r - rover, w1 - waypoint, w2 - waypoint)
-            "equipped_for_soil_analysis": ["Rover"],  # (r - rover)
-            "equipped_for_rock_analysis": ["Rover"],  # (r - rover)
-            "equipped_for_imaging": ["Rover"],  # (r - rover)
-            "empty": ["Store"],  # (s - store)
-            "have_rock_analysis": ["Rover", "Waypoint"],  # (r - rover, w - waypoint)
-            "have_soil_analysis": ["Rover", "Waypoint"],  # (r - rover, w - waypoint)
-            "full": ["Store"],  # (s - store)
-            "calibrated": ["Camera", "Rover"],  # (c - camera, r - rover)
-            "supports": ["Camera", "Mode"],  # (c - camera, m - mode)
-            "available": ["Rover"],  # (r - rover)
-            "visible": ["Waypoint", "Waypoint"],  # (w1 - waypoint, w2 - waypoint)
-            "have_image": ["Rover", "Objective", "Mode"],  # (r - rover, o - objective, m - mode)
-            "communicated_soil_data": ["Waypoint"],  # (w - waypoint)
-            "communicated_rock_data": ["Waypoint"],  # (w - waypoint)
-            "communicated_image_data": ["Objective", "Mode"],  # (o - objective, m - mode)
-            "at_soil_sample": ["Waypoint"],  # (w - waypoint)
-            "at_rock_sample": ["Waypoint"],  # (w - waypoint)
-            "visible_from": ["Objective", "Waypoint"],  # (o - objective, w - waypoint)
-            "store_of": ["Store", "Rover"],  # (s - store, r - rover)
-            "calibration_target": ["Camera", "Objective"],  # (c - camera, o - objective)
-            "on_board": ["Camera", "Rover"],  # (c - camera, r - rover)
-            "channel_free": ["Lander"],  # (l - lander)
+            "at": ["rover", "waypoint"],  # (r - rover, w - waypoint)
+            "at_lander": ["lander", "waypoint"],  # (l - lander, w - waypoint)
+            "can_traverse": ["rover", "waypoint", "waypoint"],  # (r - rover, w1 - waypoint, w2 - waypoint)
+            "equipped_for_soil_analysis": ["rover"],  # (r - rover)
+            "equipped_for_rock_analysis": ["rover"],  # (r - rover)
+            "equipped_for_imaging": ["rover"],  # (r - rover)
+            "empty": ["store"],  # (s - store)
+            "have_rock_analysis": ["rover", "waypoint"],  # (r - rover, w - waypoint)
+            "have_soil_analysis": ["rover", "waypoint"],  # (r - rover, w - waypoint)
+            "full": ["store"],  # (s - store)
+            "calibrated": ["camera", "rover"],  # (c - camera, r - rover)
+            "supports": ["camera", "mode"],  # (c - camera, m - mode)
+            "available": ["rover"],  # (r - rover)
+            "visible": ["waypoint", "waypoint"],  # (w1 - waypoint, w2 - waypoint)
+            "have_image": ["rover", "objective", "mode"],  # (r - rover, o - objective, m - mode)
+            "communicated_soil_data": ["waypoint"],  # (w - waypoint)
+            "communicated_rock_data": ["waypoint"],  # (w - waypoint)
+            "communicated_image_data": ["objective", "mode"],  # (o - objective, m - mode)
+            "at_soil_sample": ["waypoint"],  # (w - waypoint)
+            "at_rock_sample": ["waypoint"],  # (w - waypoint)
+            "visible_from": ["objective", "waypoint"],  # (o - objective, w - waypoint)
+            "store_of": ["store", "rover"],  # (s - store, r - rover)
+            "calibration_target": ["camera", "objective"],  # (c - camera, o - objective)
+            "on_board": ["camera", "rover"],  # (c - camera, r - rover)
+            "channel_free": ["lander"],  # (l - lander)
         }
         super().__init__(action_2_sort, fluent_2_sort, sorts, "rover")
 
     def get_obj_type(self, obj_name: str) -> Sort:
         if "rover" in obj_name and "store" in obj_name:
-            return Sort("Store")
+            return Sort("store")
         elif "rover" in obj_name:
-            return Sort("Rover")
+            return Sort("rover")
         elif "waypoint" in obj_name:
-            return Sort("Waypoint")
+            return Sort("waypoint")
         elif "camera" in obj_name:
-            return Sort("Camera")
+            return Sort("camera")
         elif any(keyword in obj_name for keyword in ["colour", "high_res", "low_res"]):
-            return Sort("Mode")
+            return Sort("mode")
         elif "general" in obj_name :
-            return Sort("Lander")
+            return Sort("lander")
         elif "objective" in obj_name:
-            return Sort("Objective")
+            return Sort("objective")
 
 
 class SatelliteInfo(DomSortsInfo):

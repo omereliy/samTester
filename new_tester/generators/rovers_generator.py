@@ -62,21 +62,23 @@ typed_commands = [
 
 
 
-def generate_problems(output_directory: Path):
+def generate_problems(output_directory: Path, is_learn=False):
     print("Generating problems for the rover domain...")
-    i = 0
+    i = 1
     for _ in range(0, 25):
         random_commands = [
-            f"./rovergen {random.randint(1234, 6233)} -u 1 4 2 1 {random.randint(1, 3)}",
+            f"./rovergen {random.randint(1234, 6233)} 1 4 2 1 {random.randint(1, 3)}",
             # Slightly more challenging
-            f"./rovergen {random.randint(1423, 8272)} -u 2 6 2 2 {random.randint(3, 4)}",
+            f"./rovergen {random.randint(1423, 8272)} 2 6 2 2 {random.randint(3, 4)}",
             # Quite hard
-            f"./rovergen {random.randint(1425, 6153)} -u 4 8 4 4 4",
+            f"./rovergen {random.randint(1425, 6153)} 4 8 4 4 4",
             # Very hard
-            f"./rovergen {random.randint(4621, 8328)} -u 6 15 6 5 {random.randint(5, 8)}",
+            f"./rovergen {random.randint(4621, 8328)} 6 15 6 5 {random.randint(5, 8)}",
         ]
         for command in random_commands:
-            problem_name = f"pfile{i + 1}.pddl"
+            if is_learn and i > 10:
+                break
+            problem_name = f"pfile{i}.pddl"
             problem_path = output_directory / problem_name
             print(f"Generating problem {problem_name} with command: {command}")
             try:
@@ -93,7 +95,8 @@ def _export_problem(problem_path, result):
 
 
 def main():
-    output_directory = Path("../probs/untyped_probs/rover/test_probs")
+    base = Path(__file__).parent.parent
+    output_directory = base / "probs" / "typed_probs" / "rover" / "learn_probs"
     output_directory.mkdir(exist_ok=True)
     generate_problems(output_directory)
 
