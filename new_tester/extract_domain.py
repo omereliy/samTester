@@ -83,7 +83,7 @@ def get_obs_trace_list(
 
         if len(lines)-1 > steps_left:
             trimmed_plan_path = \
-                str(base / 'outputs' / 'plans' / dom_name / 'trimmed_learn_plans' /  f'plan_{datetime.now()}{number_of_step}')
+                str(base / 'outputs' / 'plans' / dom_name / 'trimmed_learn_plans' /  f'{plans[i]}_{datetime.now()}{number_of_step}')
             trim_operations_file(plan_path, trimmed_plan_path, steps_left)
             plan = planner.generate_plan(from_ipc_file=True, filename=trimmed_plan_path)
             plan_trace = planner.generate_single_trace_from_plan(plan)
@@ -127,7 +127,7 @@ def extract_dom (dom_name:SamDomNames, number_of_steps: int, typed: bool=True):
             pass
 
         else:  # esam call
-            learned_dom_filename = base / 'learned_doms' / dom_name.value /f"{dom_name.value}_{number_of_steps}.pddl"
+            learned_dom_filename = base / 'esam_learned_doms' / dom_name.value /f"{dom_name.value}_{number_of_steps}.pddl"
             if to_terminate.is_set():
                 return
 
@@ -144,7 +144,9 @@ def extract_dom (dom_name:SamDomNames, number_of_steps: int, typed: bool=True):
                                  domain_filename=str(learned_dom_filename),
                                  problem_filename=str(base /'trash'/ f'{dom_name.value}_prob.pddl'))
             except Exception as e:
-                raise e
+                print(e)
+                print(e.__traceback__)
+
 
     else:
         pass
@@ -153,12 +155,13 @@ def extract_dom (dom_name:SamDomNames, number_of_steps: int, typed: bool=True):
 
 
 def run():
-    steps_for_learn = [10, 20, 40, 60, 80, 100, 120, 150, 200]
+    steps_for_learn = [10, 20, 40, 60, 80, 100, 120, 150, 200, 250, 300, 350, 400, 500]
+
     with concurrent.futures.ThreadPoolExecutor(max_workers=5) as executor:
         futures = [
             executor.submit(
                 extract_dom,
-                dom_name=SamDomNames.ROVER,
+                dom_name=SamDomNames.SATELLITE,
                 number_of_steps=i,
                 typed=True) for i in steps_for_learn]
         try:
@@ -179,8 +182,7 @@ def run():
                 try:
                     future.result()  # to raise exceptions if any occurred
                 except Exception as err:
-                    print(f"An error occurred: {err}")
-                    raise err
+                    print(f"An error occurred: {err} at future")
 
 def signal_handler(sig, frame):
     to_terminate.set()

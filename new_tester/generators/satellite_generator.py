@@ -76,6 +76,8 @@ def generate_problems(output_directory: Path, is_learn=False):
     print("Generating problems for the satellite domain...")
     i = 1
     for _ in range(0, 25):
+        if is_learn and i > 20:
+            break
         random_commands = [
             f"./satgen {random.randint(1000, 7789)} 1 3 3 3 {random.randint(4, 10)}",
             # More serious numbers of observations
@@ -86,7 +88,7 @@ def generate_problems(output_directory: Path, is_learn=False):
             f"./satgen 0001 5 {random.randint(5, 10)} {random.randint(5, 10)} 5 20",
         ]
         for command in random_commands:
-            if is_learn and i > 10:
+            if is_learn and i > 20:
                 break
             problem_name = f"pfile{i}.pddl"
             problem_path = output_directory / problem_name

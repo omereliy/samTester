@@ -76,20 +76,22 @@ def generate_problems(output_directory: Path, is_learn=False):
     print("Generating problems for the depot domain...")
     i = 1
     for _ in range(0, 20):
+        if is_learn and i > 20:
+            break
         random_commands = [
             f"./depotgen {random.randint(1818, 5656)} 1 2 2 3 3 {random.randint(2, 8)}",
             f"./depotgen {random.randint(1818, 5656)} 1 2 2 3 3 {random.randint(9, 15)}",
             f"./depotgen {random.randint(1234, 5451)} 1 2 2 6 3 {random.randint(6, 15)}",
             f"./depotgen {random.randint(2000, 6000)} 3 3 2 10 6 {random.randint(6, 15)}",
             f"./depotgen {random.randint(6000, 7654)} 3 3 2 10 6 {random.randint(6, 15)}"
-            #f"./depotgen {random.randint(6000, 7654)} -u 2 2 4 8 8 {random.randint(6, 15)}",
+            #f"./depotgen {random.randint(6000, 7654)} 2 2 4 8 8 {random.randint(6, 15)}",
         ]
         for command in random_commands:
             problem_name = f"pfile{i}.pddl"
             problem_path = output_directory / problem_name
             print(f"Generating problem {problem_name} with command: {command}")
             try:
-                if is_learn and i > 10:
+                if is_learn and i > 20:
                     break
                 result = subprocess.check_output(command, shell=True, stderr=subprocess.STDOUT)
                 _export_problem(problem_path, result)
@@ -105,9 +107,9 @@ def _export_problem(problem_path, result):
 
 def main():
     base = Path(__file__).parent.parent
-    output_directory = base / "probs" / "typed_probs" / "depots" / "learn_probs"
+    output_directory = base / "probs" / "typed_probs" / "depots" / "test_probs"
     Path(output_directory).mkdir(parents=True, exist_ok=True)
-    generate_problems(Path(output_directory))
+    generate_problems(Path(output_directory), is_learn=False)
 
 
 if __name__ == "__main__":
