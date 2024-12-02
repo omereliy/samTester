@@ -1,6 +1,7 @@
 /depots_problem.pddl/
 /archive/old_tester
 /archive/
+/.idea
 /probs/untyped_probs/rover/test_probs
 /probs/untyped_probs/rover/learn_probs
 /probs/untyped_probs/depots/learn_probs
