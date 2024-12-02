@@ -1,5 +1,6 @@
 /depots_problem.pddl/
 /archive/old_tester
+/archive/
 /probs/untyped_probs/rover/test_probs
 /probs/untyped_probs/rover/learn_probs
 /probs/untyped_probs/depots/learn_probs
@@ -11,7 +12,7 @@
 
 
 *.log
-/new_tester/IPC3
+/IPC3
 
 /downward-release-22.06.0/
 /soplex-release-710/
