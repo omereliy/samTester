@@ -2,8 +2,12 @@ import os
 import subprocess
 from pathlib import Path
 import pandas as pd
-
+from macq import extract
+from dom_sorts_info import RoverInfo
 import dom_sorts_info
+import macq.trace
+from macq.generate.pddl import Generator
+from macq.observation.identity_observation import IdentityObservation
 
 steps_for_learn = [10, 20, 40, 60, 80, 100, 120, 150, 200, 250, 300, 350, 400, 500]
 
@@ -107,6 +111,43 @@ def find_false_negative_and_try_resolve(dom_name, mode):
             sol_path = f'outputs/plans/{dom_name}/{mode}/{step}/plan{num}'
             solve(dom_path, prob_path, sol_path)
 
+def extract_rover_oof_tests_roni():
+    dom_info = RoverInfo()
+    trace_list = macq.trace.TraceList([])
+    for i in [1,2,3]:
+        planner = Generator(dom=str(base/ 'archive'/ 'for_roni' / 'domain.pddl'),
+                            prob=str(base/ 'archive'/ 'for_roni' / f'pfile{i}.pddl'),
+                            observe_static_fluents=True,
+                            observe_pres_effs=True)
+        plan = planner.generate_plan(from_ipc_file=True, filename=str(base/ 'archive'/ 'for_roni' / f'plan{i}'))
+        trace = planner.generate_single_trace_from_plan(plan)
+        trace_list.append(trace)
+
+    obs_trace_list = trace_list.tokenize(Token=IdentityObservation)
+    fluents = obs_trace_list.get_fluents()
+    objects: set[str] = {obj.name for flu in fluents for obj in flu.objects}
+    learned_dom_filename = base/ 'archive'/ 'for_roni' / 'esam_domain.pddl'
+    model = extract.ESAM(
+        obs_trace_list=obs_trace_list,
+        obj_to_sort=dom_info.get_obj_2_type_dict(obj_names=objects),
+        sorts=dom_info.sorts,
+        action_2_sort=dom_info.action_2_sort,
+        fluent_types=dom_info.fluent_2_sort)
+    model.to_pddl_lifted(domain_name='rover',
+                         problem_name=f"rover_prob",
+                         domain_filename=str(learned_dom_filename),
+                         problem_filename=str(base / 'trash' / f'rover_prob.pddl'))
+    learned_dom_filename = base/ 'archive'/ 'for_roni' / 'sam_domain.pddl'
+    model = extract.SAM(
+        obs_trace_list=obs_trace_list,
+        objects_names_2_types=dom_info.get_obj_2_type_dict(obj_names=objects),
+        sorts=dom_info.sorts,
+        action_2_sort=dom_info.action_2_sort,
+        fluent_types=dom_info.fluent_2_sort)
+    model.to_pddl_lifted(domain_name='rover',
+                         problem_name=f"rover_prob",
+                         domain_filename=str(learned_dom_filename),
+                         problem_filename=str(base / 'trash' / f'rover_prob.pddl'))
 
 
 
@@ -121,6 +162,7 @@ if __name__ == "__main__":
     # for mode in ['esam', 'sam']:
     #     for dom_name in ["rover", "satellite", "depots"]:
     #         find_false_positives(dom_name, mode)
-    a = {7: 18}
-    if 7 in a.keys():
-        print(a[7])
+    # a = {7: 18}
+    # if 7 in a.keys():
+    #     print(a[7])
+    extract_rover_oof_tests_roni()
