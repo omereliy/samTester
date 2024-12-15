@@ -1,15 +1,20 @@
 /depots_problem.pddl/
-/old_tester
-/new_tester/rover/test_probs
-/new_tester/rover/learn_probs
-/new_tester/dgen/learn_probs
-/new_tester/dgen/test_probs
-/new_tester/satelite/learn_probs
-/new_tester/satelite/test_probs
-/new_tester/sat_typed/test_probs
-/new_tester/sat_typed/learn_probs
+/archive/old_tester
+/archive/
+/.idea
+/probs/untyped_probs/rover/test_probs
+/probs/untyped_probs/rover/learn_probs
+/probs/untyped_probs/depots/learn_probs
+/probs/untyped_probs/depots/test_probs
+/probs/untyped_probs/satellite/learn_probs
+/probs/untyped_probs/satellite/test_probs
+/satellite_typed/test_probs
+/satellite_typed/learn_probs
 
 
 *.log
-/new_tester/IPC3
+/IPC3
 
+/downward-release-22.06.0/
+/soplex-release-710/
+/VAL/
